@@ -1,0 +1,10 @@
+export const appId = "com.firebot.bhaptics";
+export const appName = "Firebot-Script";
+export const retryTime = 5000;
+export const BHAPTICS_EVENT_SOURCE_ID = "v1pern3st-bHaptics-control"
+export const bHapticsPlayerConnectedEvent = "bHaptics-Player-Connected";
+export const bHapticsPlayerDisconnectedEvent = "bHaptics-Player-Disconnected";
+export const bHapticsDeviceCountEvent = "bHaptics-Device-Count";
+export const bHapticsActiveKeysEvent = "bHaptics-Active-Keys";
+export const bHapticsRegisteredKeysEvent = "bHaptics-Registered-Keys";
+export const bHapticsFeedbackEvent = "bHaptics-Feedback";
