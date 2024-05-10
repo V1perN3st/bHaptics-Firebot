@@ -50,11 +50,11 @@ export const submitRegEffect: Firebot.EffectType<{
         <eos-container header="Scale" ng-if="effect.modify === 'scale'">
             <div class="input-group">
                 <span class="input-group-addon" id="delay-length-effect-type">Intensity (0.2 - 5)</span>
-                <input ng-model="effect.intensity" type="text" class="form-control" aria-describedby="delay-length-effect-type" type="text" replace-variables="number" disable-variable-menu="true">
+                <input ng-model="effect.intensity" type="text" class="form-control" aria-describedby="delay-length-effect-type" disable-variable-menu="true">
             </div>
             <div class="input-group" style="margin-top:10px" >
                 <span class="input-group-addon" id="delay-length-effect-type">Duration (0.2 - 5)</span>
-                <input ng-model="effect.duration" type="text" class="form-control" aria-describedby="delay-length-effect-type" type="text" replace-variables="number" disable-variable-menu="true">
+                <input ng-model="effect.duration" type="text" class="form-control" aria-describedby="delay-length-effect-type" disable-variable-menu="true">
             </div>
         </eos-container>
         <eos-container header="Rotate" ng-if="effect.modify === 'rotate'">

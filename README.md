@@ -38,6 +38,5 @@ Head over to the Wiki for more information about how to use this Firebot Script.
 2. `npm install`
 
 ### Building
-Release:
 1. `npm run build`
-- Copy .js from `/dist`
+2. Copy .js from `/dist`

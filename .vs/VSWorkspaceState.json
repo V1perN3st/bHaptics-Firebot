@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\bHaptics",
+    "\\src\\bHaptics\\models",
+    "\\src\\firebot",
+    "\\src\\firebot\\effects",
+    "\\src\\firebot\\events",
+    "\\src\\firebot\\filters",
+    "\\src\\firebot\\variables"
+  ],
+  "SelectedNode": "\\src\\firebot\\constants.ts",
+  "PreviewInSolutionExplorer": false
+}

@@ -76,8 +76,10 @@ export const regTactFileEffect: Firebot.EffectType<{
         const errors = [];
         if (effect.tactkey == null || effect.tactkey == "") {
             errors.push("Please provide a Key name.");
-        } else if (effect.regKey.includes(effect.tactkey)) {
-            errors.push("Key name already registered.");
+        } else if (/\s/.test(effect.tactkey)) {
+            errors.push("Please do not use spaces within key name.")
+        } else if (!/^[a-z0-9-_]+$/i.test(effect.tactkey)) {
+            errors.push("Please use only alphanumeric characters, dash (-), or underscore (_)")
         };
         if (effect.tactmode == "tactfile" && (effect.tactfilepath == null || effect.tactfilepath === "")) {
             errors.push("Please select a TACT file.");

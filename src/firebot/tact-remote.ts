@@ -3,7 +3,7 @@ import bHapticsPlayer from "../bHaptics/bHapticsPlayer"
 import {
     RegisteredVariable,
     RegisteredKeysVariable,
-    ConnectedPosVariable,
+    PosVariable,
 } from "./types";
 import {
     appId,
@@ -14,8 +14,10 @@ import {
     bHapticsPlayerDisconnectedEvent,
     bHapticsRegisteredKeysEvent,
     bHapticsActiveKeysEvent,
-    bHapticsDeviceCountEvent,
-    bHapticsFeedbackEvent,
+    bHapticsDeviceEvent,
+    bHapticsFeedbackStatusEvent,
+    bHapticsPlayerConnectingEvent,
+    PositionTypeVar,
 } from "./constants"
 import { logger, responseCode } from "../logger";
 import { DotPoint, PathPoint, ScaleOption, RotationOption, PositionType } from "../bHaptics/models/Interfaces"
@@ -31,10 +33,11 @@ let msgRegKeyCount: number;
 let msgConnectedDevices: number;
 let msgConnectedPos: string[] = [];
 let logging: boolean;
+let _enable: boolean = true;
 
 export let getRegVar: RegisteredVariable;
 export let getRegKeyVar: RegisteredKeysVariable;
-export let getConnectPosVar: ConnectedPosVariable;
+export let getPosVar: PosVariable;
 
 export function initRemote(
     {
@@ -62,9 +65,6 @@ export function initRemote(
 
     // Initialize: Address, Port, App Name, App ID, Retry Time (int), Logging (boolean)
     bHapticsPlayer.initialize(addr, port, appId, appName, retryTime, logging, loggingResp);
-
-    // Initialize Connection
-    bHapticsPlayer.initConnect();
 
     logger.info("Add Listener");
 
@@ -117,8 +117,22 @@ export function initRemote(
             if (msg.message.ConnectedDeviceCount = 0) {
 
             }
-            msgConnectedDevices = msg.message.ConnectedDeviceCount;
             msgConnectedPos = msg.message.ConnectedPositions;
+            if (msgConnectedDevices !== undefined) {
+                if (msgConnectedPos.length != msgConnectedDevices) {
+                    eventManager?.triggerEvent(
+                        BHAPTICS_EVENT_SOURCE_ID,
+                        bHapticsDeviceEvent,
+                        {
+                            pos: msgConnectedPos,
+                            count: msg.message.ConnectedDeviceCount,
+                        }
+                    );
+                };
+                msgConnectedDevices = msg.message.ConnectedDeviceCount;
+            } else {
+                msgConnectedDevices = msg.message.ConnectedDeviceCount;
+            };
             if (!connected) {
                 connected = true;
                 eventManager?.triggerEvent(
@@ -143,18 +157,24 @@ export function initRemote(
                 );
             };
         } else if (msg.status === 'Connecting') {
-            //if (connected) {
-            //    connected = false;
-            //};
+            eventManager?.triggerEvent(
+                BHAPTICS_EVENT_SOURCE_ID,
+                bHapticsPlayerConnectingEvent,
+                {}
+            );
         };
         //msgRegKeys = msg.message.RegisteredKeys;
         //msgConnectedDevices = msg.message.ConnectedDeviceCount;
         //msgConnectedPos = msg.message.ConnectedPositions;
     });
+
+    // Initialize Connection
+    bHapticsPlayer.initConnect();
 }
 
 export async function regTact(regKey: string, tact: string, file: boolean) {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
     var json: string
@@ -189,6 +209,7 @@ export function validateRegKeys(regKey: string) {
 
 export async function stopAllRegKeys(): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
     try {
@@ -201,6 +222,7 @@ export async function stopAllRegKeys(): Promise<void> {
 
 export async function stopRegKeys(regKey: string): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
     try {
@@ -213,6 +235,11 @@ export async function stopRegKeys(regKey: string): Promise<void> {
 
 export async function submitRegKey(regKey: string): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
+        return;
+    };
+    if (!_enable) {
+        logging && logger.debug("Not Enabled");
         return;
     };
     try {
@@ -223,9 +250,38 @@ export async function submitRegKey(regKey: string): Promise<void> {
     };
 };
 
+/*
+export async function submitRegAltKey(regKey: string,
+    altKet: string,
+    scaleOption: ScaleOption,
+    rotationOption: RotationOption): Promise<void> {
+    if (!connected) {
+        return;
+    };
+    if (!_enable) {
+        return;
+    };
+    if (logging) {
+        logger.debug("RegKey:", regKey);
+        logger.debug("Scale:", scaleOption);
+    };
+    try {
+        await bHapticsPlayer.submitRegisteredWithScaleOption(regKey, scaleOption);
+    } catch (e) {
+        var error = responseCode(e, logging);
+        logger.error("Failed to Submit Registered Key with Scale Option:", error);
+    };
+};
+*/
+
 export async function submitRegKeyScale(regKey: string,
     scaleOption: ScaleOption): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
+        return;
+    };
+    if (!_enable) {
+        logging && logger.debug("Not Enabled");
         return;
     };
     if (logging) {
@@ -243,6 +299,11 @@ export async function submitRegKeyScale(regKey: string,
 export async function submitRegKeyRotate(regKey: string,
     rotationOption: RotationOption): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
+        return;
+    };
+    if (!_enable) {
+        logging && logger.debug("Not Enabled");
         return;
     };
     if (logging) {
@@ -262,6 +323,11 @@ export async function submitDot(key: string,
     dotPoints: DotPoint[],
     durationMillis: number): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
+        return;
+    };
+    if (!_enable) {
+        logging && logger.debug("Not Enabled");
         return;
     };
     if (logging) {
@@ -283,6 +349,11 @@ export async function submitPath(key: string,
     pathPoints: PathPoint[],
     durationMillis: number): Promise<void> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
+        return;
+    };
+    if (!_enable) {
+        logging && logger.debug("Not Enabled");
         return;
     };
     if (logging) {
@@ -299,8 +370,36 @@ export async function submitPath(key: string,
     };
 };
 
+export async function enableFeedback() {
+    _enable = true;
+    eventManager?.triggerEvent(
+        BHAPTICS_EVENT_SOURCE_ID,
+        bHapticsFeedbackStatusEvent,
+        { enabled: _enable }
+    );
+}
+
+export async function disableFeedback() {
+    _enable = false;
+    eventManager?.triggerEvent(
+        BHAPTICS_EVENT_SOURCE_ID,
+        bHapticsFeedbackStatusEvent,
+        { enabled: _enable }
+    );
+}
+
+export async function toggleFeedback() {
+    _enable = !_enable;
+    eventManager?.triggerEvent(
+        BHAPTICS_EVENT_SOURCE_ID,
+        bHapticsFeedbackStatusEvent,
+        { enabled: _enable }
+    );
+}
+
 export async function getRespMsgData(): Promise<RegisteredVariable> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
     getRegVar = {
@@ -323,6 +422,7 @@ export async function getRespMsgData(): Promise<RegisteredVariable> {
 
 export async function getRegKeyData(): Promise<RegisteredKeysVariable> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
     getRegKeyVar = {
@@ -339,20 +439,22 @@ export async function getRegKeyData(): Promise<RegisteredKeysVariable> {
     return getRegKeyVar;
 }
 
-export async function getConnectedPosData(): Promise<ConnectedPosVariable> {
+export async function getPosData(): Promise<PosVariable> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
-    getConnectPosVar = {
+    getPosVar = {
         connectCount: msgConnectedDevices,
         pos: {
             connected: msgConnectedPos,
+            posType: PositionTypeVar,
         },
     }
     if (logging) {
-        logger.debug("getRegKeyData Return:", getRegKeyVar);
+        logger.debug("getConnectedPosData Return:", getPosVar);
     };
-    return getConnectPosVar;
+    return getPosVar;
 }
 
 /*
@@ -369,6 +471,7 @@ export async function getReportedRegKeysVar(): Promise<string[]> {
 */
 export async function getReportedConnectedPos(): Promise<string[]> {
     if (!connected) {
+        logging && logger.debug("Not Connected");
         return;
     };
     try {

@@ -84,10 +84,11 @@ export type RegisteredKeysVariable = {
     }
 };
 
-// Return only Connected Positions and Count
-export type ConnectedPosVariable = {
+// Return only Connected Positions, Count, and Position List
+export type PosVariable = {
     connectCount: number,
     pos: {
         connected: string[],
-    }
+        posType: string[],
+    },
 };

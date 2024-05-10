@@ -9,14 +9,11 @@ import { stopRegEffect } from "./firebot/effects/stop-reg";
 import { submitDotEffect } from "./firebot/effects/submit-dot";
 import { submitPathEffect } from "./firebot/effects/submit-path";
 import { submitRegEffect } from "./firebot/effects/submit-reg";
+import { toggleHaptics } from "./firebot/effects/toggle-haptics";
 import { bHapticsEventSource } from "./firebot/events/bHaptics-event-source";
 import { ActKeyEventFilter } from "./firebot/filters/key-filters"
 //import { ConnectedPositionVariable } from "./firebot/variables/connected-variable";
 //import { RegisteredKeysVariable } from "./firebot/variables/regkeys-variable";
-
-//interface Params {
-//  message: string;
-//}
 
 const script: Firebot.CustomScript<bHapticsParams> = {
   getScriptManifest: () => {
@@ -89,9 +86,10 @@ const script: Firebot.CustomScript<bHapticsParams> = {
       effectManager.registerEffect(regTactFileEffect);
       effectManager.registerEffect(stopAllRegEffect);
       effectManager.registerEffect(stopRegEffect);
-      //effectManager.registerEffect(submitDotEffect);
-      //effectManager.registerEffect(submitPathEffect);
+      effectManager.registerEffect(submitDotEffect);
+      effectManager.registerEffect(submitPathEffect);
       effectManager.registerEffect(submitRegEffect);
+      effectManager.registerEffect(toggleHaptics);
 
       eventManager.registerEventSource(bHapticsEventSource);
 

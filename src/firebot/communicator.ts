@@ -2,12 +2,12 @@ import { ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
 import {
     getRespMsgData,
     getRegKeyData,
-    getConnectedPosData,
+    getPosData,
 } from "./tact-remote";
 import {
     RegisteredVariable,
     RegisteredKeysVariable,
-    ConnectedPosVariable,
+    PosVariable,
 } from "./types";
 
 export function setupFrontListeners(
@@ -21,8 +21,8 @@ export function setupFrontListeners(
         "bHaptics-get-registration-key-data",
         getRegKeyData
     );
-    frontendCommunicator.onAsync<never, ConnectedPosVariable>(
-        "bHaptics-get-connected-pos-data",
-        getConnectedPosData
+    frontendCommunicator.onAsync<never, PosVariable>(
+        "bHaptics-get-pos-data",
+        getPosData
     );
 };

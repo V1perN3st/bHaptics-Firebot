@@ -3,7 +3,6 @@ import {
     BHAPTICS_EVENT_SOURCE_ID,
     bHapticsActiveKeysEvent,
     bHapticsRegisteredKeysEvent,
-    bHapticsDeviceCountEvent,
 } from "../constants";
 import { RegisteredKeysVariable, } from "../types"
 
@@ -83,7 +82,7 @@ export const CountEventFilter: EventFilter = {
     events: [
         { eventSourceId: BHAPTICS_EVENT_SOURCE_ID, eventId: bHapticsRegisteredKeysEvent },
         { eventSourceId: BHAPTICS_EVENT_SOURCE_ID, eventId: bHapticsActiveKeysEvent },
-        //{ eventSourceId: BHAPTICS_EVENT_SOURCE_ID, eventId: bHapticsDeviceCountEvent },
+        { eventSourceId: BHAPTICS_EVENT_SOURCE_ID, eventId: bHapticsDeviceCountEvent },
     ],
     description: "Filter on the count of bHaptics Events (Keys and Positions)",
     valueType: "number",
@@ -98,6 +97,37 @@ export const CountEventFilter: EventFilter = {
     predicate: async ({ comparisonType, value }, { eventMeta }) => {
         const expected = value;
         const actual = eventMeta.count;
+        switch (comparisonType) {
+            case "is":
+                return actual === expected;
+            case "is not":
+                return actual !== expected;
+            default: false;
+        }
+    },
+};
+*/
+/*
+export const PosConnectEventFilter: EventFilter = {
+    id: "v1pern3st:bhaptics-poistion-connect-filter",
+    name: "Poistion Connect",
+    events: [
+        { eventSourceId: BHAPTICS_EVENT_SOURCE_ID, eventId: bHapticsDeviceCountEvent }
+    ],
+    description: "Filter on the device that connected",
+    valueType: "preset",
+    comparisonTypes: ["is", "is not"],
+    presetValues: (PositionType: string[]) => {
+        PositionType.map((s) => {
+            return {
+                value: s,
+                display: s,
+            };
+        });
+    },
+    predicate: async ({ comparisonType, value }, { eventMeta }) => {
+        const expected = value;
+        const actual = eventMeta.pos;
         switch (comparisonType) {
             case "is":
                 return actual === expected;

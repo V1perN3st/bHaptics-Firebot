@@ -1,12 +1,13 @@
 import { EventSource } from "@crowbartools/firebot-custom-scripts-types/types/modules/event-manager";
 import {
     BHAPTICS_EVENT_SOURCE_ID,
-    bHapticsDeviceCountEvent,
+    bHapticsDeviceEvent,
     bHapticsRegisteredKeysEvent,
     bHapticsActiveKeysEvent,
     bHapticsPlayerConnectedEvent,
     bHapticsPlayerDisconnectedEvent,
-    bHapticsFeedbackEvent,
+    bHapticsPlayerConnectingEvent,
+    bHapticsFeedbackStatusEvent,
 } from "../constants";
 
 export const bHapticsEventSource: EventSource = {
@@ -24,17 +25,22 @@ export const bHapticsEventSource: EventSource = {
             name: "bHaptics Player Disconnected",
             description: "When the bHaptics Player is Disconnected",
             manualMetadata: {},
-        },/*
+        },
         {
-            id: bHapticsDeviceCountEvent,
-            name: "Device Count Changed",
-            description: "When the Device Connected Count Change",
+            id: bHapticsPlayerConnectingEvent,
+            name: "bHaptics Player Connecting",
+            description: "When the bHaptics Player is Connecting",
+            manualMetadata: {},
+        },
+        {
+            id: bHapticsDeviceEvent,
+            name: "bHaptics Device Change",
+            description: "When a Position Connects or Disconnects",
             manualMetadata: {
-                type: "Unknown",
+                pos: [],
                 count: 0,
-                pos: "Last Pos",
             },
-        },*/
+        },
         {
             id: bHapticsRegisteredKeysEvent,
             name: "bHaptics Registered Keys Changed",
@@ -53,12 +59,14 @@ export const bHapticsEventSource: EventSource = {
                 count: 0,
                 keys: "Last Key",
             },
-        },/*
+        },
         {
-            id: bHapticsFeedbackEvent,
-            name: "Active Feedback",
-            description: "This shows what is being activated",
-            manualMetadata: {},
-        },*/
+            id: bHapticsFeedbackStatusEvent,
+            name: "bHaptics Feedback Status",
+            description: "When the Feedback is Enabled or Disable",
+            manualMetadata: {
+                enabled: null,
+            },
+        },
     ]
 }
